@@ -1,0 +1,184 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace CarManufacturer
+{
+	public class StartUp
+	{
+		static void Main()
+		{
+			string input;
+
+			List<Tire[]> listOfTires = new List<Tire[]>();
+
+			while ((input = Console.ReadLine()) != "No more tires")
+			{
+				string[] tireInfoSplit = input.Split(' ');
+
+				Tire[] currentSetOfTires = new Tire[] 
+				{
+					new Tire(int.Parse(tireInfoSplit[0]), double.Parse(tireInfoSplit[1])),
+					new Tire(int.Parse(tireInfoSplit[2]), double.Parse(tireInfoSplit[3])),
+					new Tire(int.Parse(tireInfoSplit[4]), double.Parse(tireInfoSplit[5])),
+					new Tire(int.Parse(tireInfoSplit[6]), double.Parse(tireInfoSplit[7])),
+				};
+
+				listOfTires.Add(currentSetOfTires);
+			}
+			input = "";
+
+			List<Engine> listOfEngines = new List<Engine>();
+
+			while ((input = Console.ReadLine()) != "Engines done")
+			{
+				string[] engineInfoSplit = input.Split(' ');
+
+				Engine currentEngine = new Engine(int.Parse(engineInfoSplit[0]),
+					double.Parse(engineInfoSplit[1]));
+
+				listOfEngines.Add(currentEngine);
+			}
+			input = "";
+
+			List<Car> listOfCars = new List<Car>();
+
+			while ((input = Console.ReadLine()) != "Show special")
+			{
+				string[] carInfoSplit = input.Split(' ');
+
+				Car currentCar = new Car
+					(
+						carInfoSplit[0],
+						carInfoSplit[1],
+						int.Parse(carInfoSplit[2]),
+						double.Parse(carInfoSplit[3]),
+						double.Parse(carInfoSplit[4]),
+						listOfEngines[int.Parse(carInfoSplit[5])],
+						listOfTires[int.Parse(carInfoSplit[6])]
+					);
+
+				listOfCars.Add(currentCar);
+			}
+
+			foreach (Car car in listOfCars)
+			{		
+				double pressureCheck = 0;
+				foreach (var tire in car.Tires)
+				{
+					pressureCheck += tire.Pressure;
+				}
+
+				if ((pressureCheck > 9 || pressureCheck < 10)
+					&& car.Engine.HorsePower > 330 && car.Year >= 2017)
+				{
+					car.Drive(20);
+					Console.WriteLine($"Make: {car.Make}" +
+					$"\nModel: {car.Model}" +
+					$"\nYear: {car.Year}" +
+					$"\nHorsePowers: {car.Engine.HorsePower}" +
+					$"\nFuelQuantity: {Math.Round(car.FuelQuantity, 2)}");
+				}
+			}
+		}
+	}
+	public class Engine
+	{
+		public Engine(int horsePower, double cubicCapacity)
+		{
+			this.HorsePower = horsePower;
+			this.CubicCapacity = cubicCapacity;
+		}
+		public int HorsePower { get; set; }
+		public double CubicCapacity { get; set; }
+		private int horsePower;
+		private double cubicCapacity;
+	}
+	public class Tire
+	{
+		public Tire(int year, double pressure)
+		{
+			this.Year = year;
+			this.Pressure = pressure;
+		}
+		public int Year { get; set; }
+		public double Pressure { get; set; }
+		private int year;
+		private double pressure;
+		
+	}
+
+	public class Car
+	{
+		public Car()
+		{
+			Make = "VW";
+			Model = "Golf";
+			Year = 2025;
+			FuelQuantity = 200;
+			FuelConsumption = 10;
+		}
+		public Car(string make, string model, int year)
+			: this()
+		{
+			this.Make = make;
+			this.Model = model;
+			this.Year = year;
+		}
+		public Car(string make, string model, int year, double fuelQuantity, double fuilConsumption)
+			: this(make, model, year)
+		{
+			this.Make = make;
+			this.Model = model;
+			this.Year = year;
+			this.FuelQuantity = fuelQuantity;
+			this.FuelConsumption = fuilConsumption;
+		}
+		public Car(string make, string model, int year, double fuelQuantity, double fuilConsumption, Engine engine, Tire[] tires)
+			: this(make, model, year, fuelQuantity, fuilConsumption)
+		{
+			this.Make = make;
+			this.Model = model;
+			this.Year = year;
+			this.FuelQuantity = fuelQuantity;
+			this.FuelConsumption = fuilConsumption;
+			this.Engine = engine;
+			this.Tires = tires;
+		}
+
+		public string Make { get; set; }
+		public string Model { get; set; }
+		public int Year { get; set; }
+		public double FuelQuantity { get; set; }
+		public double FuelConsumption { get; set; }
+		public Tire[] Tires { get; set; }
+		public Engine Engine { get; set; }
+		private string make { get; set; }
+		private string model { get; set; }
+		private int year { get; set; }
+		private double fuelQuantity { get; set; }
+		private double fuelConsumption { get; set; }
+		private Tire[] tires { get; set; }
+		private Engine engine { get; set; }
+
+		public void Drive(double distance)
+		{
+			this.FuelQuantity -= distance * (this.FuelConsumption / 100);
+			
+			if (this.FuelQuantity < 0)
+			{
+				Console.WriteLine("Not enough fuel to perform this trip!");
+			}
+		}
+		public string WhoAmI()
+		{
+			string res = 
+				$"Make: {this.Make}" +
+				$"\nModel: {this.Model}" +
+				$"\nYear: {this.Year}" +
+				$"\nHorsePowers: {this.Engine.HorsePower}" +
+				$"\nFuelQuantity: {Math.Round(this.FuelQuantity, 2)}";
+			return res;
+		}
+	}
+}
